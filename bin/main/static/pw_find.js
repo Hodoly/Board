@@ -1,3 +1,4 @@
+//인증번호 메일발송
 $("[name='send']").off().on("click", function() {
 	var subject = "sbb 회원인증번호 입니다.";
 	var body = "안녕하세요 sbb 입니다. \n 인증번호 : ";
@@ -16,8 +17,9 @@ $("[name='send']").off().on("click", function() {
 			xhr.setRequestHeader(header, token);
 		});
 	});
+	$("[name='username']").attr("readonly", true)
 	$.ajax({
-		url: "/user/email"
+		url: "/email"
 		, beforeSend: function(xhr) {
 			xhr.setRequestHeader(header, token);
 		}
@@ -27,34 +29,34 @@ $("[name='send']").off().on("click", function() {
 		, dataType: "json"
 		, success: function(data) {
 			alert("이메일 전송에 성공하였습니다.");
-			$("[name='username']").attr("readonly", true)
+			takeTarget();
 		},
 
 		error: function(jqXHR, textStatus, errorThrown) {
 			alert("이메일 전송에 실패하였습니다.");
+			$("[name='username']").attr("readonly", false)
 		}
 	});
 });
-
+// 인증번호 확인
 $("[name='authcheck']").off().on("click", function() {
-
+	var username = $("[id='username']").val();
+	var serial = $("[id='auth']").val();
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
-	var username = $("[id='username']").val();
-	var auth = $("[id='auth']").val();
-
-	var params = {
-		username: username
-		, auth: auth
-	}
-
 	$(function() {
 		$(document).ajaxSend(function(e, xhr, options) {
 			xhr.setRequestHeader(header, token);
 		});
 	});
+
+	var params = {
+		username: username
+		, serial : serial
+	}
+
 	$.ajax({
-		url: "/user/auth"
+		url: "/check"
 		, beforeSend: function(xhr) {
 			xhr.setRequestHeader(header, token);
 		}
@@ -63,11 +65,38 @@ $("[name='authcheck']").off().on("click", function() {
 		, data: JSON.stringify(params)
 		, dataType: "json"
 		, success: function(data) {
-			alert("이메일 전송에 성공하였습니다.");
+			if(data == 1){
+				alert("인증에 성공하였습니다.");
+				location.href = "/user/pwchange?userid="+username;
+			}else{
+				alert("인증에 실패하였습니다.");
+			}
 		},
 
 		error: function(jqXHR, textStatus, errorThrown) {
-			alert("인증에 실패하였습니다. 인증번호를 다시 입력해주세요.");
+			alert("인증에 실패하였습니다.");
 		}
 	});
 });
+
+//타이머
+const remainingMin = document.getElementById("remaining__min");
+const remainingSec = document.getElementById("remaining__sec");
+const completeBtn = document.getElementById("authcheck");
+
+let time = 180;
+const takeTarget = () => {
+	setInterval(function() {
+		if (time > 0) { // >= 0 으로하면 -1까지 출력된다.
+			completeBtn.disabled = false;
+			time = time - 1; // 여기서 빼줘야 3분에서 3분 또 출력되지 않고, 바로 2분 59초로 넘어간다.
+			let min = Math.floor(time / 60);
+			let sec = String(time % 60).padStart(2, "0");
+			remainingMin.innerText = min;
+			remainingSec.innerText = sec;
+			// time = time - 1
+		} else {
+			completeBtn.disabled = true;
+		}
+	}, 1000);
+};

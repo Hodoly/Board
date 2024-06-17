@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mysite.sbb.DataNotFoundException;
+import com.mysite.sbb.email.RedisUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,15 @@ public class UserService {
 		this.userRepository.save(user);
 		return user;
 	}
+	
+	public SiteUser pwchange(String username, String password) {
+		Optional<SiteUser> result = userRepository.findByUsername(username);
+		SiteUser user = result.get();
+		user.setPassword(passwordEncoder.encode(password));
+		this.userRepository.save(user);
+		return user;
+	}
+	
 	public SiteUser getUser(String username) {
 		Optional<SiteUser> siteUser = this.userRepository.findByUsername(username);
 		if(siteUser.isPresent()) {

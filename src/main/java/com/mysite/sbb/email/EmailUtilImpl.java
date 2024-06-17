@@ -12,18 +12,21 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Component
 @RequiredArgsConstructor
 public class EmailUtilImpl implements EmailUtil {
 	private final UserService userService;
+	private final RedisService redisService;
+
 	@Autowired
 	private JavaMailSender sender;
 
-	@Override
-	public Map<String, Object> sendEmail(String username, String subject, String body) {
+	public Map<String, Object> sendEmail(String username, String subject, String body, String serial) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		MimeMessage message = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
@@ -40,6 +43,7 @@ public class EmailUtilImpl implements EmailUtil {
 		}
 
 		sender.send(message);
+		redisService.setRedis(username, serial);
 		return result;
 	}
 }

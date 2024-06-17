@@ -5,11 +5,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mysite.sbb.email.EmailUtil;
@@ -23,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-	private final EmailUtil emailUtil;
 	private final UserService userService;
 
 	@GetMapping("/signup")
@@ -32,24 +34,16 @@ public class UserController {
 	}
 
 	@GetMapping("/pwfind")
-	public String pwfind(UserCreateForm userCreateForm) {
+	public String pwfind() {
 		return "pwfind_form";
 	}
 
-	@PostMapping("/email")
-	@ResponseBody
-	public Map<String, Object> Email(@RequestBody Map<String, Object> params) {
-		log.info("email params={}", params);
-		// 인증번호 저장
-		String serial = Integer.toString(ThreadLocalRandom.current().nextInt(100000, 1000000));
-		String body = (String) params.get("body") + serial;
-        return emailUtil.sendEmail( (String) params.get("username")
-                , (String) params.get("subject")
-                , body
-        );
-
+	@GetMapping("/pwchange")
+	public String pwchange(Model model, @RequestParam(value = "userid", defaultValue="") String userid) {
+		model.addAttribute("userid", userid);
+		return "pw_change";
 	}
-
+	
 	@PostMapping("/signup")
 	public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -73,6 +67,25 @@ public class UserController {
 		return "redirect:/";
 	}
 
+	@PostMapping("/pwchange")
+	public String pwchange(@Valid UserChangePw userChangePw, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "pw_change";
+		}
+		if (!userChangePw.getPassword1().equals(userChangePw.getPassword2())) {
+			bindingResult.rejectValue("password2", "passwordInCorrect", "2개의 비밀번호가 일치하지 않습니다.");
+			return "pw_change";
+		}
+		try {
+			userService.pwchange(userChangePw.getUsername(), userChangePw.getPassword1());
+		} catch (Exception e) {
+			e.printStackTrace();
+			bindingResult.reject("signupFailed", e.getMessage());
+			return "signup_form";
+		}
+		return "redirect:/";
+	}
+	
 	@GetMapping("/login")
 	public String login() {
 		return "login_form";
