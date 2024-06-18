@@ -3,5 +3,6 @@ package com.mysite.sbb.email;
 import java.util.Map;
 
 public interface EmailUtil {
-	 Map<String, Object> sendEmail(String toAddress, String subject, String body, String serial);
+	 Map<String, Object> sendEmailPw(String username, String subject, String body, String serial);
+	 Map<String, Object> sendEmailSign(String email, String subject, String body, String serial);
 }

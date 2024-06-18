@@ -3,6 +3,8 @@ package com.mysite.sbb;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class MainController {
 	@GetMapping("/sbb")
@@ -16,4 +18,5 @@ public class MainController {
 	public String root() {
 		return "redirect:/question/list";
 	}
+	
 }

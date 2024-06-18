@@ -38,8 +38,8 @@ public class RedisService {
 	}// save
 
 	@Transactional(readOnly = true)
-	public String getUserByUsername(String username) {
-		String value = stringRedisTemplate.opsForValue().get(username);
+	public String getUserByEmail(String email) {
+		String value = stringRedisTemplate.opsForValue().get(email);
 //		Optional<RedisUser> result = repository.findByUsername(username);
 		// Handling
 		if (value != null || value != "") {
@@ -50,12 +50,12 @@ public class RedisService {
 
 	}
 
-	public String setRedis(String userId, String serial) {
-		stringRedisTemplate.opsForValue().set(userId, serial, 3 * 60, TimeUnit.SECONDS);
+	public String setRedis(String email, String serial) {
+		stringRedisTemplate.opsForValue().set(email, serial, 5 * 60, TimeUnit.SECONDS);
 
-		log.info("Temporay Password set : {}", redisTemplate.opsForValue().get(userId));
+		log.info("Temporay Password set : {}", redisTemplate.opsForValue().get(email));
 
-		return (String) redisTemplate.opsForValue().get(userId);
+		return (String) redisTemplate.opsForValue().get(email);
 	}
 
 	public String checkOtp(String id, String otp) {

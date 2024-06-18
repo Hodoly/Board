@@ -26,7 +26,7 @@ public class EmailUtilImpl implements EmailUtil {
 	@Autowired
 	private JavaMailSender sender;
 
-	public Map<String, Object> sendEmail(String username, String subject, String body, String serial) {
+	public Map<String, Object> sendEmailPw(String username, String subject, String body, String serial) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		MimeMessage message = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
@@ -43,7 +43,26 @@ public class EmailUtilImpl implements EmailUtil {
 		}
 
 		sender.send(message);
-		redisService.setRedis(username, serial);
+		redisService.setRedis(toAddress, serial);
+		return result;
+	}
+	
+	public Map<String, Object> sendEmailSign(String email, String subject, String body, String serial) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		MimeMessage message = sender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message);
+		try {
+			helper.setTo(email);
+			helper.setSubject(subject);
+			helper.setText(body);
+			result.put("resultCode", 200);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			result.put("resultCode", 500);
+		}
+
+		sender.send(message);
+		redisService.setRedis(email, serial);
 		return result;
 	}
 }

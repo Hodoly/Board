@@ -1,11 +1,10 @@
-//인증번호 메일발송
 $("[name='send']").off().on("click", function() {
 	var subject = "sbb 회원인증번호 입니다.";
 	var body = "안녕하세요 sbb 입니다. \n 인증번호 : ";
-	var username = $("[id='username']").val();
+	var email = $("[id='email']").val();
 
 	var params = {
-		username: username
+		email: email
 		, subject: subject
 		, body: body
 	}
@@ -17,9 +16,8 @@ $("[name='send']").off().on("click", function() {
 			xhr.setRequestHeader(header, token);
 		});
 	});
-	$("[name='username']").attr("readonly", true)
 	$.ajax({
-		url: "/email"
+		url: "/email/idfind"
 		, beforeSend: function(xhr) {
 			xhr.setRequestHeader(header, token);
 		}
@@ -33,14 +31,15 @@ $("[name='send']").off().on("click", function() {
 		},
 
 		error: function(jqXHR, textStatus, errorThrown) {
-			alert("이메일 전송에 실패하였습니다.");
-			$("[name='username']").attr("readonly", false)
+			alert(jqXHR.responseJSON.message);
 		}
 	});
 });
+
+
 // 인증번호 확인
 $("[name='authcheck']").off().on("click", function() {
-	var username = $("[id='username']").val();
+	var email = $("[id='email']").val();
 	var serial = $("[id='auth']").val();
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
@@ -51,24 +50,29 @@ $("[name='authcheck']").off().on("click", function() {
 	});
 
 	var params = {
-		username: username
-		, serial : serial
+		email: email
+		, serial: serial
 	}
 
 	$.ajax({
-		url: "/check"
+		url: "/check/idfind"
 		, beforeSend: function(xhr) {
 			xhr.setRequestHeader(header, token);
 		}
 		, type: "POST"
 		, contentType: "application/json; charset=utf-8"
 		, data: JSON.stringify(params)
-		, dataType: "json"
+		, dataType: "text"
 		, success: function(data) {
-			if(data == 1){
+			if (data != 0) {
 				alert("인증에 성공하였습니다.");
-				location.href = "/user/pwchange?userid="+username;
-			}else{
+				var _html = "";
+				_html += '<label for="findid" class="form-label" style="display: flex;">id는 ' + data + ' 입니다.</label>';
+				_html += '<button type="button" class="btn btn-primary" onclick="location.href=\'/user/login\'">로그인</button>' +
+					'&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-primary" onclick="location.href=\'/user/idfind\'">비밀번호 찾기</button>';
+				$("[name='delete_area']").remove();
+				$("[name='append_area']").html(_html);
+			} else {
 				alert("인증에 실패하였습니다.");
 			}
 		},
@@ -84,7 +88,7 @@ const remainingMin = document.getElementById("remaining__min");
 const remainingSec = document.getElementById("remaining__sec");
 const completeBtn = document.getElementById("authcheck");
 
-let time = 180;
+let time = 300;
 const takeTarget = () => {
 	setInterval(function() {
 		if (time > 0) { // >= 0 으로하면 -1까지 출력된다.

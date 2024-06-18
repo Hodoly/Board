@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mysite.sbb.email.EmailUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,14 +40,19 @@ public class UserController {
 		return "pwfind_form";
 	}
 
+	@GetMapping("/idfind")
+	public String idfind() {
+		return "idfind_form";
+	}
+
 	@GetMapping("/pwchange")
-	public String pwchange(Model model, @RequestParam(value = "userid", defaultValue="") String userid) {
+	public String pwchange(Model model, @RequestParam(value = "userid", defaultValue = "") String userid) {
 		model.addAttribute("userid", userid);
 		return "pw_change";
 	}
-	
+
 	@PostMapping("/signup")
-	public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult) {
+	public String signup(@Valid UserCreateForm userCreateForm, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
 			return "signup_form";
 		}
@@ -53,8 +60,19 @@ public class UserController {
 			bindingResult.rejectValue("password2", "passwordInCorrect", "2개의 비밀번호가 일치하지 않습니다.");
 			return "signup_form";
 		}
+		model.addAttribute("username", userCreateForm.getUsername());
+		model.addAttribute("password", userCreateForm.getPassword1());
+		return "signup_email";
+	}
+	@PostMapping("/signup2")
+	public String signup2(@Valid UserCreateForm2 userCreateForm2, BindingResult bindingResult, HttpServletRequest req) {
+		HttpSession session = req.getSession();
+		if (session.getAttribute("authRecord") == null || session.getAttribute("authRecord") != "1" ) {
+			bindingResult.rejectValue("auth", "noneAuth", "이메일 인증을 완료해주세요.");
+			return "signup_email";
+		}
 		try {
-			userService.create(userCreateForm.getUsername(), userCreateForm.getEmail(), userCreateForm.getPassword1());
+			userService.create(userCreateForm2.getUsername(), userCreateForm2.getEmail(), userCreateForm2.getPassword());
 		} catch (DataIntegrityViolationException e) {
 			e.printStackTrace();
 			bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
@@ -66,6 +84,7 @@ public class UserController {
 		}
 		return "redirect:/";
 	}
+	
 
 	@PostMapping("/pwchange")
 	public String pwchange(@Valid UserChangePw userChangePw, BindingResult bindingResult) {
@@ -85,7 +104,7 @@ public class UserController {
 		}
 		return "redirect:/";
 	}
-	
+
 	@GetMapping("/login")
 	public String login() {
 		return "login_form";
