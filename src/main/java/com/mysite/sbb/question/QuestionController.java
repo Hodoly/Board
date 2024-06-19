@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,22 +42,36 @@ public class QuestionController {
 	private final AnswerService answerService;
 	private final UserService userService;
 	private final CategoryService categoryService;
-
+	
 	@GetMapping("/list")
-	public String list(Model model, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="kw", defaultValue="") String kw, @RequestParam(value="ct", defaultValue="0") int ct) {
+	public String admin_list(Model model, @RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "kw", defaultValue = "") String kw,
+			@RequestParam(value = "ct", defaultValue = "0") int ct) {
 		Page<Question> paging = this.questionService.getList(page, kw, ct);
 		List<Category> category = this.categoryService.getCategory();
 		model.addAttribute("category", category);
 		model.addAttribute("paging", paging);
-		model.addAttribute("kw",kw);
-		model.addAttribute("ct",ct);
-		return "question_list";
-	}
+		model.addAttribute("kw", kw);
+		model.addAttribute("ct", ct);
 		
+		// 현재 인증된 사용자 가져오기
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    boolean isAdmin = authentication.getAuthorities().stream()
+	                        .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+	    
+	    if (isAdmin) {
+	        return "admin_question_list";
+	    } else {
+	        return "question_list";
+	    }
+	}
+	
+
 	@GetMapping(value = "/detail/{id}")
-	public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm, @RequestParam(value = "page", defaultValue = "0") int page) {
+	public String detail(Model model, @PathVariable("id") Integer id, AnswerForm answerForm,
+			@RequestParam(value = "page", defaultValue = "0") int page) {
 		Question question = this.questionService.getQuestion(id);
-		Page<Answer> paging = this.answerService.getAnswer(question ,page);
+		Page<Answer> paging = this.answerService.getAnswer(question, page);
 		Category category = question.getCategory();
 		model.addAttribute("category", category.getName());
 		model.addAttribute("paging", paging);
@@ -72,7 +88,6 @@ public class QuestionController {
 		return "question_form";
 	}
 
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/create")
 	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
@@ -80,7 +95,8 @@ public class QuestionController {
 			return "question_form";
 		}
 		SiteUser siteUser = this.userService.getUser(principal.getName());
-		this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser, questionForm.getCategory());
+		this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser,
+				questionForm.getCategory());
 		return "redirect:/question/list";
 	}
 

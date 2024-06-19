@@ -14,9 +14,6 @@
 				<li class="nav-item">
 					<a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/user/signup}">회원 가입</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/category/create}">카테고리 생성</a>
-				</li>
 			</ul>
 		</div>
 	</div>

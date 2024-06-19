@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+	<meta id="_csrf" name="_csrf" th:content="${_csrf.token}" />
+	<!-- default header name is X-CSRF-TOKEN -->
+	<meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}" />
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/bootstrap.min.css}">
+	<!-- sbb CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+	<!-- jquery JS -->
+	<script th:src="@{/jquery-3.7.1.min.js}"></script>
+	<title>Hello, sbb!</title>
+</head>
+
+<body>
+	<!-- S : nav  -->
+	<nav th:replace="~{admin_navbar :: navbarFragment}"></nav>
+	<!-- E : nav  -->
+	<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+	<th:block layout:fragment="content"></th:block>
+	<!-- 기본 템플릿 안에 삽입될 내용 End -->
+	<!-- Bootstrap JS -->
+	<script th:src="@{/bootstrap.min.js}"></script>
+	<!-- 자바스크립트 Start -->
+	<th:block layout:fragment="script"></th:block>
+	<!-- 자바스크립트 End -->
+</body>
+
+</html>

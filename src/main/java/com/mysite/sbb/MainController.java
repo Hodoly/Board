@@ -1,5 +1,6 @@
 package com.mysite.sbb;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,5 +19,4 @@ public class MainController {
 	public String root() {
 		return "redirect:/question/list";
 	}
-	
 }
