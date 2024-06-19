@@ -1,0 +1,46 @@
+package com.mysite.sbb.email;
+
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class RedisService {
+
+	private final RedisRepository repository;
+
+	@Transactional
+	public RedisUser addUser(RedisUser user) {
+		// save
+		RedisUser save = repository.save(user);
+
+		// find
+		Optional<RedisUser> result = repository.findById(save.getId());
+
+		// Handling
+		// 해당 data 존재시 return.
+		if (result.isPresent()) {
+			return result.get();
+		} else {
+			throw new RuntimeException("Database has no Data");
+		}
+	}// save
+
+	@Transactional(readOnly = true)
+	public RedisUser getUserById(String reqId) {
+		Optional<RedisUser> result = repository.findById(reqId);
+
+		// Handling
+		if (result.isPresent()) {
+			return result.get();
+		} else {
+			throw new RuntimeException("Database has no Data");
+		}
+	}
+}

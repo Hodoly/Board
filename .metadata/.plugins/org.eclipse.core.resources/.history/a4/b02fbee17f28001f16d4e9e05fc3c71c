@@ -1,0 +1,19 @@
+package com.mysite.sbb.category;
+
+import com.mysite.sbb.question.Question;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.Setter;
+import jakarta.persistence.OneToMany;
+
+@Getter
+@Setter
+@Entity
+public class Category {
+	@Column(columnDefinition = "TEXT")
+	private String Category;
+	
+	@OneToMany
+	private Question question;
+}

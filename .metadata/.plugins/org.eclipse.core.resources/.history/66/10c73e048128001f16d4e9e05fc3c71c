@@ -1,0 +1,32 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container">
+	<h5 class="my-3 border-bottom pb-2">질문 등록</h5>
+	<form th:object="${questionForm}" method="post">
+		<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		<div th:replace="~{form_errors :: formErrorsFragment}"></div>
+		<div class="mb-3">
+			<label for="categroy">질문/답변</label>
+			<select name="categroy" id="lang">
+				<option value="javascript">JavaScript</option>
+				<option value="php">PHP</option>
+				<option value="java">Java</option>
+				<option value="golang">Golang</option>
+				<option value="python">Python</option>
+				<option value="c#">C#</option>
+				<option value="C++">C++</option>
+				<option value="erlang">Erlang</option>
+			</select>
+		</div>
+		<div class="mb-3">
+			<label for="subject" class="form-label">제목</label>
+			<input type="text" th:field="*{subject}" class="form-control">
+		</div>
+		<div class="mb-3">
+			<label for="content" class="form-label">내용</label>
+			<textarea th:field="*{content}" class="form-control" rows="10"></textarea>
+		</div>
+		<input type="submit" value="저장하기" class="btn btn-primary my-2">
+	</form>
+</div>
+
+</html>

@@ -1,0 +1,42 @@
+package com.mysite.sbb.email;
+
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class RedisMailAuthenticationProcessor implements MailAuthenticationProcessor {
+	private final AuthCodeGenerator authCodeGenerator;
+	private final StringRedisTemplate stringRedisTemplate;
+	private final long authTtl;
+
+	public RedisMailAuthenticationProcessor(final AuthCodeGenerator authCodeGenerator,
+			final StringRedisTemplate stringRedisTemplate, @Value("${mail.auth.ttl}") final long authTtl) {
+		this.authCodeGenerator = authCodeGenerator;
+		this.stringRedisTemplate = stringRedisTemplate;
+		this.authTtl = authTtl;
+	}
+
+	@Override
+	public String storeAuthCode(String key) {
+		final String authCode = authCodeGenerator.get();
+		stringRedisTemplate.opsForValue().set(key, authCode, authTtl, TimeUnit.MILLISECONDS);
+		return authCode;
+	}
+
+	@Override
+	public void verifyAuthCode(String key, String value) {
+		final String realValue = stringRedisTemplate.opsForValue().get(key);
+		 
+		if (!value.equals(realValue)) {
+			throw AnotherArtException.type(AuthErrorCode.INVALID_AUTH_CODE);
+			}
+
+	}
+
+	@Override
+	public void deleteAuthCode(String key) {
+		stringRedisTemplate.delete(key);
+	}
+
+}

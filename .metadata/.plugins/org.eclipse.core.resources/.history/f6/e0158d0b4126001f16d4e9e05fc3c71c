@@ -1,0 +1,14 @@
+package com.mysite.sbb.comment;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class Mapper {
+	public Comment toDto(Comment comment) {
+		String content = comment.getContent();
+		String createDate = comment.getCreateDate().toString();
+		String author = comment.getAuthor().toString();
+		
+		return new CommentDTO(content, createDate, author);
+	}
+}

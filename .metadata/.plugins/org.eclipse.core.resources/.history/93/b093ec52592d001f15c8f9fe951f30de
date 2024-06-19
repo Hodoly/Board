@@ -1,0 +1,49 @@
+package com.mysite.sbb.email;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Component;
+
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+@Component
+@RequiredArgsConstructor
+public class EmailUtilImpl implements EmailUtil {
+	private final UserService userService;
+	private final RedisService redisService;
+
+	@Autowired
+	private JavaMailSender sender;
+
+	public Map<String, Object> sendEmail(String username, String subject, String body, String serial) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		MimeMessage message = sender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message);
+		try {
+			SiteUser user = userService.getUser(username);
+			String toAddress = user.getEmail();
+			helper.setTo(toAddress);
+			helper.setSubject(subject);
+			helper.setText(body);
+			result.put("resultCode", 200);
+			sender.send(message);
+			redisService.setRedis(toAddress, serial);
+			return result;
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			result.put("resultCode", 500);
+			return result;
+		}
+	}
+}

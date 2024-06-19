@@ -1,0 +1,30 @@
+package com.mysite.sbb;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+public class MainController {
+	@GetMapping("/sbb")
+	@ResponseBody
+	public String index() {
+//		System.out.println("index");
+		return "안녕하세요 sbb에 오신 것을 환영합니다.";
+	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@GetMapping("/")
+	public String rootAdmin() {
+		System.out.println("checkmsg22222");
+		return "redirect:/question/list";
+	}
+	
+	@GetMapping("/")
+	public String root() {
+		System.out.println("checkmsg1111");
+		return "redirect:/question/list";
+	}
+}

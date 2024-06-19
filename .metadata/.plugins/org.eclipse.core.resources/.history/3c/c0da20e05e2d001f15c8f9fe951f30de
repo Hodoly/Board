@@ -1,0 +1,75 @@
+package com.mysite.sbb.email;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Component;
+
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+@Component
+@RequiredArgsConstructor
+public class EmailUtilImpl implements EmailUtil {
+	private final UserService userService;
+	private final RedisService redisService;
+
+	@Autowired
+	private JavaMailSender sender;
+
+	public Map<String, Object> sendEmailPw(String username, String subject, String body, String serial) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		MimeMessage message = sender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message);
+		SiteUser user = userService.getUser(username);
+		String toAddress = user.getEmail();
+		try {
+			helper.setTo(toAddress);
+			helper.setSubject(subject);
+			helper.setText(body);
+			result.put("resultCode", 200);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			result.put("resultCode", 500);
+		}
+
+		sender.send(message);
+		redisService.setRedis(toAddress, serial);
+		return result;
+	}
+	
+	public Map<String, Object> sendEmailSign(String email, String subject, String body, String serial) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		MimeMessage message = sender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message);
+		String present = userService.getUserEmail(email);
+		if(present.equals("1")) {
+			result.put("resultCode", 207);
+			System.out.println("111111111");
+			return result;
+		}else {
+			try {
+				System.out.println("22222222");
+				helper.setTo(email);
+				helper.setSubject(subject);
+				helper.setText(body);
+				result.put("resultCode", 200);
+			} catch (MessagingException e) {
+				e.printStackTrace();
+				result.put("resultCode", 500);
+			}
+		}
+		sender.send(message);
+		redisService.setRedis(email, serial);
+		return result;
+	}
+}

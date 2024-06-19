@@ -1,0 +1,49 @@
+package com.mysite.sbb.email;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@RestController
+@RequiredArgsConstructor
+@Slf4j
+public class RedisController {
+
+    private final UserService userService;
+
+    /**
+     * @info    : Redis에 User 정보를 저장한다.
+     * @name    : addUser
+     * @version : 1.0.0
+     */
+    @PostMapping("/redis/v1/post")
+    public RedisUser addUser(@RequestBody RedisUser user) {
+        log.info("Controller Request: {}", user);
+
+        RedisUser result = userService.addUser(user);
+        
+        log.info("Controller result: {}", result);
+
+        return result;
+    }// save
+
+
+    /**
+     * @info    : Redis에 ID 값으로 유저 정보를 가져온다.
+     * @name    : getUser
+     * @version : 1.0.0
+     * @Description :
+     */
+    @GetMapping("/redis/v1/getUser")
+    public User getUser(@RequestParam String reqId) {
+        User userById = serivce.getUserById(reqId);
+        return userById;
+    }
+}

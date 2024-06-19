@@ -1,0 +1,14 @@
+package com.mysite.sbb.comment;
+
+import java.time.LocalDateTime;
+
+public class CommentDTO {
+	private String content;
+	private LocalDateTime createDate;
+	private String author;
+	
+	@Override
+	public String toString() {
+		return "Comment [conetent=" + content + ", author=" + author + "]";
+	}
+}

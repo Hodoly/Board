@@ -1,0 +1,3 @@
+$("[id='send']").off().on("click", function() {
+	
+});

@@ -1,0 +1,40 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+	<div class="my-3 border-bottom">
+		<div>
+			<h4>회원가입</h4>
+		</div>
+	</div>
+	<form th:action="@{/user/signup}" th:object="${userCreateForm}" method="post">
+		<div th:replace="~{form_errors :: formErrorsFragment}"></div>
+		<div class="mb-3">
+			<label for="username" class="form-label">사용자 ID</label>
+			<input type="text" th:field="*{username}" class="form-control">
+		</div>
+		<div class="mb-3">
+			<label for="password1" class="form-label">비밀번호</label>
+			<input type="password" th:field="*{password1}" class="form-control">
+		</div>
+		<div class="mb-3">
+			<label for="password2" class="form-label">비밀번호 확인</label>
+			<input type="password" th:field="*{password2}" class="form-control">
+		</div>
+		<div class="mb-3">
+			<label for="email" class="form-label" style="display: flex;">이메일</label>
+			<input type="email" th:field="*{email}" class="form-control" style="width: 70%; display: inline-block;">
+			<button type="button" class="btn btn-primary" name="send" id="send">인증번호 발송</button>
+		</div>
+		<div class="mb-3">
+			<label for="authcheck" class="form-label" style="display: flex;">인증번호</label>
+			<input type="text" name="auth" id="auth" class="form-control" style="width: 15%; display: inline-block;" maxlength="6">
+			<button type="button" class="btn btn-primary" name="authcheck" id="authcheck" disabled="true">확인</button>
+			<span class="target__time">
+			  <span id="remaining__min">3</span> :
+			  <span id="remaining__sec">00</span>
+			</span>
+		</div>
+		<button type="submit" class="btn btn-primary">회원 가입</button>
+	</form>
+	<script layout:fragment="script" type="text/javascript" th:src="@{/signup.js}"></script>
+</div>
+</html>

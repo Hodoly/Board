@@ -1,0 +1,47 @@
+package com.mysite.sbb.category;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
+import org.springframework.stereotype.Service;
+
+import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.answer.AnswerRepository;
+import com.mysite.sbb.question.Question;
+import com.mysite.sbb.question.QuestionRepository;
+import com.mysite.sbb.user.SiteUser;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class CommentService {
+	private final CommentRepository commentRepository;
+	private final QuestionRepository questionRepository;
+	private final AnswerRepository answerRepository;
+	
+	public Category create(Question question, String kind) {
+		Category category = new Category();
+		category.setCategory(category);
+		category.setQuestion(question);
+		if(question != null) {
+			comment.setQuestion(question);
+			this.commentRepository.save(comment);
+		}else {
+			comment.setAnswer(answer);
+			this.commentRepository.save(comment);
+		}
+		return comment;
+	}
+
+	
+	public ArrayList<Category> getQuestionComment(Question question) {
+		return this.commentRepository.findByQuestion(question);
+	}
+	
+	
+	public ArrayList<Category> getAnswerComment(Answer answer) {
+		return this.commentRepository.findByAnswer(answer);
+	}
+
+}

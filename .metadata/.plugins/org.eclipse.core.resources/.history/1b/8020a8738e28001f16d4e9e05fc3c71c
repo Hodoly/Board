@@ -1,0 +1,25 @@
+package com.mysite.sbb.category;
+
+import org.springframework.stereotype.Service;
+
+import com.mysite.sbb.question.Question;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class CategoryService {
+	private final CategoryRepository categoryRepository;
+
+	public Category create(String name) {
+		Category category = new Category();
+		category.setName(name);
+		this.categoryRepository.save(category);
+		return category;
+	}
+
+	public Category getCategory(int category) {
+		
+		return category;
+	}
+}

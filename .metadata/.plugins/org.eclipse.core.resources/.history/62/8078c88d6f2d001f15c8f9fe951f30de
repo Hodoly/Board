@@ -1,0 +1,21 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+	<form th:action="@{/user/pwchange}" method="post">
+		<input type="text" name="username" id="username" style="display: none;" th:value="${username}">
+		<input type="text" name="password" id="password" style="display: none;" th:value="${password}">
+		<div class="mb-3">
+			<span>이메일 인증을 진행해주세</span>
+		</div>
+		<div class="mb-3">
+			<label for="password1" class="form-label">비밀번호</label>
+			<input type="password" name="password1" id="password1" class="form-control">
+		</div>
+		<div class="mb-3">
+			<label for="password2" class="form-label">비밀번호 확인</label>
+			<input type="password" name="password2" id="password2" class="form-control">
+		</div>
+		<button type="submit" class="btn btn-primary">비밀번호 변경</button>
+	</form>
+	<script layout:fragment="script" type="text/javascript" th:src="@{/pw_change.js}"></script>
+</div>
+</html>

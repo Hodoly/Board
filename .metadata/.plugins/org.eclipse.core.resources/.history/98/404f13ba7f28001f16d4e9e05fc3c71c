@@ -1,0 +1,33 @@
+package com.mysite.sbb.category;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
+import org.springframework.stereotype.Service;
+
+import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.answer.AnswerRepository;
+import com.mysite.sbb.question.Question;
+import com.mysite.sbb.question.QuestionRepository;
+import com.mysite.sbb.category.Category;
+import com.mysite.sbb.category.CategoryRepository;
+import com.mysite.sbb.user.SiteUser;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class CategoryService {
+	private final CategoryRepository categoryRepository;
+	
+	public Category create(Question question, String kind) {
+		Category category = new Category();
+		category.setCategory(kind);
+		category.setQuestion(question);
+		this.categoryRepository.save(category);
+		return category;
+	}
+
+	
+
+}

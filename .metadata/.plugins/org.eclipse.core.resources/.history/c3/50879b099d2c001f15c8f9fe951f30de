@@ -1,0 +1,26 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+	<form th:action="@{/user/emailcheck}" method="post">
+		<div th:if="${param.error}">
+			<div class="alert alert-danger">
+				사용자 ID 또는 이메일을 확인해 주세요.
+			</div>
+		</div>
+		<div class="mb-3">
+			<label for="username" class="form-label" style="display: flex;">사용자 ID (가입 시 기입하신 이메일로 메일이 발송됩니다.)</label>
+			<input type="text" name="username" id="username" class="form-control" style="width: 40%; display: inline-block;">
+			<button type="button" class="btn btn-primary" name="send">이메일 전송</button>
+		</div>
+		<div class="mb-3">
+			<label for="authcheck" class="form-label" style="display: flex;">인증번호</label>
+			<input type="text" name="auth" id="auth" class="form-control" style="width: 15%; display: inline-block;" maxlength="6">
+			<button type="button" class="btn btn-primary" name="authcheck" id="authcheck">확인</button>
+			<span class="target__time">
+			  <span id="remaining__min">3</span> :
+			  <span id="remaining__sec">00</span>
+			</span>
+		</div>
+	</form>
+	<script layout:fragment="script" type="text/javascript" th:src="@{/pw_find.js}"></script>
+</div>
+</html>

@@ -1,0 +1,36 @@
+package com.mysite.sbb.email;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class RedisMailAuthenticationProcessor implements MailAuthenticationProcessor {
+	private final AuthCodeGenerator authCodeGenerator;
+	private final StringRedisTemplate stringRedisTemplate;
+	private final long authTtl;
+	
+	
+	public RedisMailAuthenticationProcessor(final AuthCodeGenerator authCodeGenerator,final StringRedisTemplate stringRedisTemplate,@Value("${mail.auth.ttl}") final long authTtl){
+		this.authCodeGenerator = authCodeGenerator;
+		this.stringRedisTemplate = stringRedisTemplate;
+		this.authTtl = authTtl;
+	}
+	
+	@Override
+	public String storeAuthCode(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void verifyAuthCode(String key, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteAuthCode(String key) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}

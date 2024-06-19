@@ -1,0 +1,8 @@
+package com.mysite.sbb.comment;
+
+
+public class CommentDTO {
+	private String content;
+	private String createDate;
+	private String author;
+}

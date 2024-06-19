@@ -1,0 +1,35 @@
+$("[name='send']").off().on("click", function() {
+	var serialNo = generateRandomCode(6);
+	var subject = "sbb 회원인증번호 입니다.";
+	var body = "안녕하세요 sbb 입니다. \n 회원가입 인증번호는" + serialNo + " 입니다.";
+	var username= $("[id='username']").val();
+	
+	var params = {
+		username: username 
+		, subject: subject
+		, body: body
+	}
+
+	if (serialNo == "") {
+		alert("인증번호를 입력해주세요.");
+		return false;
+	}
+
+	$.ajax({
+		url: "/auth/sendEmail"
+		, type: "POST"
+		, accept: "application/json"
+		, contentType: "application/json; charset=utf-8"
+		, data: JSON.stringify(params)
+		, dataType: "json"
+		, success: function(data) {
+			debugger;
+			//시리얼번호 db에 저장
+			saveSerialNo(serialNo)
+		},
+
+		error: function(jqXHR, textStatus, errorThrown) {
+			alert("이메일 전송에 실패하였습니다.");
+		}
+	});
+});
