@@ -10,3 +10,4 @@ spring-boot로 구성한 간단한 게시판입니다.
 8. 추천(vote)
 9. 타임리프 사용
 10. jar파일 배포
+11. AWS에서 재공하는 PostgreSQL DB로 변환
